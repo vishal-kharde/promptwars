@@ -3,713 +3,380 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ArenaFlow - Football Stadium Management & Command Center</title>
-  <!-- Google Fonts -->
+  <title>PrepChef AI - Custom Cooking Planner & To-Do List</title>
+  <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- ChartJS -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-mode">
   <div class="app-container">
     
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar">
+    <!-- Top Header -->
+    <header class="main-header">
       <div class="brand">
         <div class="logo-icon">
-          <i data-lucide="shield"></i>
+          <i data-lucide="chef-hat"></i>
         </div>
         <div>
-          <h2>ArenaFlow</h2>
-          <span class="sub-text">Stadium Control</span>
-        </div>
-      </div>
-
-      <nav class="nav-links">
-        <a href="#" class="nav-item active" data-tab="dashboard">
-          <i data-lucide="layout-dashboard"></i>
-          <span>Dashboard</span>
-        </a>
-        <a href="#" class="nav-item" data-tab="events">
-          <i data-lucide="calendar"></i>
-          <span>Events & Tickets</span>
-        </a>
-        <a href="#" class="nav-item" data-tab="operations">
-          <i data-lucide="settings"></i>
-          <span>Operations & Staff</span>
-        </a>
-        <a href="#" class="nav-item" data-tab="concessions">
-          <i data-lucide="shopping-bag"></i>
-          <span>Concessions & Retail</span>
-        </a>
-        <a href="#" class="nav-item" data-tab="simulator">
-          <i data-lucide="cpu"></i>
-          <span>Live Simulator</span>
-        </a>
-      </nav>
-
-      <div class="system-status-panel">
-        <div class="status-header">
-          <span>System Integrity</span>
-          <span class="status-indicator active" id="system-status-indicator"></span>
-        </div>
-        <div class="status-badge" id="system-status-text">SYSTEM NORMAL</div>
-        <div class="status-details">
-          <div class="detail-row"><span>Gates Open:</span> <strong id="sidebar-gates-open">16/16</strong></div>
-          <div class="detail-row"><span>Security:</span> <strong id="sidebar-security-status">Active</strong></div>
+          <h1>PrepChef <span class="ai-badge">AI</span></h1>
+          <span class="sub-text">Intelligent Culinary Task Planner</span>
         </div>
       </div>
       
-      <div class="sidebar-footer">
-        <div class="user-profile">
-          <div class="avatar">AD</div>
-          <div>
-            <div class="user-name">Admin Control</div>
-            <div class="user-role">Superuser</div>
-          </div>
-        </div>
+      <div class="header-actions">
+        <button id="reset-plan-btn" class="btn btn-secondary btn-icon-only" title="Reset Current Plan">
+          <i data-lucide="refresh-cw"></i>
+        </button>
       </div>
-    </aside>
+    </header>
 
-    <!-- Main Content Area -->
-    <main class="main-content">
+    <!-- Main Layout Wrapper -->
+    <div class="content-wrapper">
       
-      <!-- Top Header -->
-      <header class="top-header">
-        <div class="header-search">
-          <i data-lucide="search"></i>
-          <input type="text" placeholder="Search facilities, staff, gates...">
+      <!-- Left Configuration Panel -->
+      <aside class="config-panel" id="config-panel">
+        <div class="panel-section-header">
+          <i data-lucide="sliders"></i>
+          <h2>Planner Settings</h2>
         </div>
         
-        <div class="header-right">
-          <div class="live-clock">
-            <i data-lucide="clock"></i>
-            <span id="current-time">08:15:34 AM</span>
-          </div>
-          <div class="notification-bell dropdown-trigger" id="notif-bell">
-            <i data-lucide="bell"></i>
-            <span class="badge" id="notif-badge">3</span>
-            <div class="notif-dropdown" id="notif-dropdown">
-              <div class="notif-header">
-                <h3>Notifications</h3>
-                <button id="clear-notif">Clear All</button>
-              </div>
-              <ul class="notif-list" id="notif-list">
-                <li class="unread">
-                  <div class="icon-wrap warning"><i data-lucide="alert-triangle"></i></div>
-                  <div class="notif-body">
-                    <p>Sector B Gate 4 turnstile high friction detected.</p>
-                    <span>2 mins ago</span>
-                  </div>
-                </li>
-                <li class="unread">
-                  <div class="icon-wrap info"><i data-lucide="info"></i></div>
-                  <div class="notif-body">
-                    <p>Merchandise Stall #2 stock warning: Home Kits (M) low.</p>
-                    <span>15 mins ago</span>
-                  </div>
-                </li>
-                <li>
-                  <div class="icon-wrap success"><i data-lucide="check-circle"></i></div>
-                  <div class="notif-body">
-                    <p>Pre-match pitch humidity level achieved (65%).</p>
-                    <span>1 hour ago</span>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="header-btn" id="simulation-indicator-badge">
-            <span class="pulse-dot"></span> Live Sim Active
-          </div>
-        </div>
-      </header>
-
-      <!-- Alert Alert Banner (Emergency States) -->
-      <div class="emergency-banner hidden" id="emergency-banner">
-        <div class="banner-content">
-          <i data-lucide="alert-octagon"></i>
-          <div>
-            <strong>STADIUM ALERT LEVEL ACTIVE:</strong> <span id="emergency-banner-text">Emergency Evacuation Simulation In Progress</span>
-          </div>
-        </div>
-        <button class="dismiss-btn" id="reset-alert-btn">Reset Security Level</button>
-      </div>
-
-      <!-- Tab Content: Dashboard -->
-      <div class="tab-content active" id="tab-dashboard">
-        
-        <!-- Live Stats Ticker -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon purple">
-              <i data-lucide="users"></i>
-            </div>
-            <div class="stat-info">
-              <span class="stat-label">Total Occupancy</span>
-              <h3 class="stat-value" id="stat-occupancy">0 / 60,000</h3>
-              <div class="stat-progress-container">
-                <div class="stat-progress-bar" id="occupancy-progress" style="width: 0%"></div>
-              </div>
-              <span class="stat-trendup" id="occupancy-percentage">0% Capacity</span>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-icon green">
-              <i data-lucide="banknote"></i>
-            </div>
-            <div class="stat-info">
-              <span class="stat-label">Ticket Revenue</span>
-              <h3 class="stat-value" id="stat-revenue">$0.00</h3>
-              <span class="stat-trendup success" id="revenue-projection-match"><i data-lucide="trending-up"></i> Dynamic projection live</span>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-icon blue">
-              <i data-lucide="zap"></i>
-            </div>
-            <div class="stat-info">
-              <span class="stat-label">Turnstile Rate</span>
-              <h3 class="stat-value" id="stat-turnstile-rate">0 / min</h3>
-              <span class="stat-trenddown" id="active-turnstiles-count">All 16 turnstiles streaming</span>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-icon gold">
-              <i data-lucide="store"></i>
-            </div>
-            <div class="stat-info">
-              <span class="stat-label">Concessions Revenue</span>
-              <h3 class="stat-value" id="stat-concessions-rev">$0.00</h3>
-              <span class="stat-trendup success" id="concessions-orders-count">0 orders total</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="dashboard-main-grid">
+        <form id="planner-form" onsubmit="event.preventDefault();">
           
-          <!-- Stadium Map Widget (Left) -->
-          <div class="grid-card col-span-2 stadium-map-card">
-            <div class="card-header">
-              <div>
-                <h2>Interactive Stadium Layout</h2>
-                <p class="subtitle">Select a sector to view pricing, ticket availability, and real-time stats.</p>
-              </div>
-              <div class="sector-legend">
-                <span class="legend-item"><span class="color-dot north"></span> North Stand</span>
-                <span class="legend-item"><span class="color-dot east"></span> East Stand (VIP)</span>
-                <span class="legend-item"><span class="color-dot south"></span> South Stand</span>
-                <span class="legend-item"><span class="color-dot west"></span> West Stand (Premium)</span>
-              </div>
-            </div>
-            <div class="stadium-wrapper">
-              <svg id="stadium-svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet">
-                <!-- Inner Pitch Structure -->
-                <!-- Grass Field -->
-                <rect class="pitch-field" x="250" y="175" width="300" height="250" rx="10" />
-                <rect class="pitch-grass-lines" x="255" y="180" width="290" height="240" rx="8" />
-                <!-- Pitch Markings -->
-                <line class="pitch-marking" x1="400" y1="180" x2="400" y2="420" />
-                <circle class="pitch-marking" cx="400" cy="300" r="40" />
-                <circle class="pitch-marking-center" cx="400" cy="300" r="4" />
-                
-                <!-- Penalty Areas -->
-                <rect class="pitch-marking" x="255" y="240" width="40" height="120" />
-                <rect class="pitch-marking" x="505" y="240" width="40" height="120" />
-                
-                <!-- Goals -->
-                <rect class="pitch-goal" x="248" y="275" width="7" height="50" />
-                <rect class="pitch-goal" x="545" y="275" width="7" height="50" />
-
-                <!-- Sector Zones (Clickable Paths) -->
-                <!-- North Stand (Top) -->
-                <path class="stadium-sector north-stand" id="sector-north" d="M 230,150 L 570,150 L 620,100 L 180,100 Z" />
-                <!-- East Stand (Right) (VIP) -->
-                <path class="stadium-sector east-stand" id="sector-east" d="M 570,155 L 570,445 L 670,525 L 670,75 Z" />
-                <!-- South Stand (Bottom) -->
-                <path class="stadium-sector south-stand" id="sector-south" d="M 230,450 L 570,450 L 620,500 L 180,500 Z" />
-                <!-- West Stand (Left) (Premium) -->
-                <path class="stadium-sector west-stand" id="sector-west" d="M 230,155 L 230,445 L 130,525 L 130,75 Z" />
-
-                <!-- Corner Stands (Static Fill) -->
-                <path class="stadium-corner" d="M 180,100 A 100 100 0 0 0 130,75 L 230,155 A 20 20 0 0 1 230,150 Z" />
-                <path class="stadium-corner" d="M 670,75 A 100 100 0 0 0 620,100 L 570,150 A 20 20 0 0 1 570,155 Z" />
-                <path class="stadium-corner" d="M 670,525 A 100 100 0 0 1 620,500 L 570,450 A 20 20 0 0 1 570,445 Z" />
-                <path class="stadium-corner" d="M 130,525 A 100 100 0 0 1 180,500 L 230,450 A 20 20 0 0 1 230,455 Z" />
-                
-                <!-- Gate and Camera Indicators -->
-                <g class="overlay-node turnstile-node" transform="translate(400, 70)">
-                  <circle r="8"></circle>
-                  <text y="3" text-anchor="middle" font-size="8">N</text>
-                </g>
-                <g class="overlay-node turnstile-node" transform="translate(700, 300)">
-                  <circle r="8"></circle>
-                  <text y="3" text-anchor="middle" font-size="8">E</text>
-                </g>
-                <g class="overlay-node turnstile-node" transform="translate(400, 530)">
-                  <circle r="8"></circle>
-                  <text y="3" text-anchor="middle" font-size="8">S</text>
-                </g>
-                <g class="overlay-node turnstile-node" transform="translate(100, 300)">
-                  <circle r="8"></circle>
-                  <text y="3" text-anchor="middle" font-size="8">W</text>
-                </g>
-              </svg>
-            </div>
-          </div>
-
-          <!-- Sector Inspector Sidebar (Right) -->
-          <div class="grid-card sector-control-card">
-            <div class="card-header border-bottom">
-              <h3>Sector Details</h3>
-              <span class="badge" id="selected-sector-title">Select a Stand</span>
-            </div>
-            
-            <div class="sector-details-body" id="sector-details-empty">
-              <div class="empty-state">
-                <i data-lucide="info"></i>
-                <p>Click on any sector on the stadium layout diagram to inspect capacity, update ticket prices, and see live occupancy levels.</p>
-              </div>
-            </div>
-
-            <div class="sector-details-body hidden" id="sector-details-active">
-              <div class="sector-stat-row">
-                <span class="label">Stand Category:</span>
-                <span class="val" id="sector-category-val">VIP Tier</span>
-              </div>
-              <div class="sector-stat-row">
-                <span class="label">Total Capacity:</span>
-                <span class="val" id="sector-capacity-val">15,000</span>
-              </div>
-              <div class="sector-stat-row">
-                <span class="label">Occupancy Rate:</span>
-                <span class="val highlighted" id="sector-occupancy-rate">0%</span>
-              </div>
-              <div class="sector-stat-row">
-                <span class="label">Tickets Sold:</span>
-                <span class="val" id="sector-tickets-sold">0</span>
-              </div>
-              
-              <div class="price-controller-box">
-                <h4>Dynamic Pricing Controller</h4>
-                <div class="price-input-row">
-                  <span>Price ($)</span>
-                  <input type="number" id="sector-price-input" min="10" max="1000" step="5">
-                  <button class="btn btn-primary" id="update-price-btn">Apply</button>
-                </div>
-                <span class="note">Adjusting prices updates matching projection and checkout values.</span>
-              </div>
-
-              <div class="sector-health-box">
-                <h4>Sector Infrastructure</h4>
-                <div class="health-item">
-                  <span>Turnstile Gate Clearance:</span>
-                  <span class="status-pill green">Normal</span>
-                </div>
-                <div class="health-item">
-                  <span>Security CCTV Feeds:</span>
-                  <span class="status-pill green">Online</span>
-                </div>
-                <div class="health-item">
-                  <span>Emergency Signs:</span>
-                  <span class="status-pill green">Functional</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="dashboard-secondary-grid">
-          <!-- Live Operations & Pitch Monitor -->
-          <div class="grid-card">
-            <div class="card-header border-bottom">
-              <h3>Facility Monitor</h3>
-              <button class="btn btn-secondary btn-sm" id="test-pitch-irrigation">Trigger Pitch Water Sprinklers</button>
-            </div>
-            <div class="monitor-list">
-              <div class="monitor-row">
-                <div class="monitor-icon green"><i data-lucide="droplet"></i></div>
-                <div class="monitor-info">
-                  <div class="monitor-label-row">
-                    <strong>Pitch Grass Health</strong>
-                    <span id="pitch-moisture-val">65% Moisture</span>
-                  </div>
-                  <div class="progress-bar-small"><div id="pitch-moisture-bar" style="width: 65%;"></div></div>
-                </div>
-              </div>
-              
-              <div class="monitor-row">
-                <div class="monitor-icon purple"><i data-lucide="lightbulb"></i></div>
-                <div class="monitor-info">
-                  <div class="monitor-label-row">
-                    <strong>Floodlight Array Lux Level</strong>
-                    <span id="floodlight-lux-val">92% Power</span>
-                  </div>
-                  <div class="progress-bar-small"><div id="floodlight-lux-bar" style="width: 92%;"></div></div>
-                </div>
-              </div>
-
-              <div class="monitor-row">
-                <div class="monitor-icon blue"><i data-lucide="radio"></i></div>
-                <div class="monitor-info">
-                  <div class="monitor-label-row">
-                    <strong>Public Address (PA) Audio Level</strong>
-                    <span>88 dB (Optimal)</span>
-                  </div>
-                  <div class="progress-bar-small"><div style="width: 78%;"></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Active Event Panel -->
-          <div class="grid-card">
-            <div class="card-header border-bottom">
-              <h3>Current Event Info</h3>
-              <span class="status-badge" id="event-timer-status">PRE-MATCH INGRESS</span>
-            </div>
-            <div class="current-event-card">
-              <div class="event-teams">
-                <div class="team logo-left">
-                  <span class="team-initials" id="team-a-logo">ST</span>
-                  <strong id="team-a-name">Stadium FC</strong>
-                </div>
-                <span class="vs">VS</span>
-                <div class="team logo-right">
-                  <span class="team-initials" id="team-b-logo">AW</span>
-                  <strong id="team-b-name">Away City FC</strong>
-                </div>
-              </div>
-              <div class="match-score-board hidden" id="match-scoreboard-live">
-                <span id="score-team-a">0</span> - <span id="score-team-b">0</span>
-                <span class="live-match-timer" id="live-match-timer">00:00</span>
-              </div>
-              <div class="event-meta-info">
-                <div><i data-lucide="calendar"></i> <span id="event-date-text">Saturday, July 11, 2026</span></div>
-                <div><i data-lucide="ticket"></i> <span id="event-tickets-sold-summary">0 Tickets Sold</span></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Turnstile Entry Flow Chart -->
-          <div class="grid-card">
-            <div class="card-header">
-              <h3>Live Inflow Analytics (Fans/min)</h3>
-            </div>
-            <div class="chart-container">
-              <canvas id="turnstile-chart"></canvas>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Tab Content: Events & Tickets -->
-      <div class="tab-content hidden" id="tab-events">
-        <div class="event-dashboard-grid">
-          <div class="grid-card col-span-2">
-            <div class="card-header border-bottom">
-              <h3>Upcoming Events Schedule</h3>
-              <button class="btn btn-primary" id="open-new-event-modal">
-                <i data-lucide="plus"></i> Add New Event
+          <!-- Schedule Planner -->
+          <div class="form-group">
+            <label class="group-label">
+              <i data-lucide="calendar-days"></i> Day Schedule & Pace
+            </label>
+            <p class="field-desc">How busy is your day? We'll adapt cooking times and complexity.</p>
+            <div class="schedule-presets">
+              <button type="button" class="preset-btn active" data-pace="moderate">
+                <strong>Moderate</strong>
+                <span>Work & life balance</span>
+              </button>
+              <button type="button" class="preset-btn" data-pace="busy">
+                <strong>Packed</strong>
+                <span>Quick, &lt; 20 min meals</span>
+              </button>
+              <button type="button" class="preset-btn" data-pace="relaxed">
+                <strong>Relaxed</strong>
+                <span>Time to slow-cook</span>
               </button>
             </div>
-            <div class="table-container">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Event Details</th>
-                    <th>Date & Time</th>
-                    <th>Capacity Limit</th>
-                    <th>Tickets Sold</th>
-                    <th>Avg. Ticket Price</th>
-                    <th>Total Revenue</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="events-table-body">
-                  <!-- Generated via script -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="grid-card">
-            <div class="card-header border-bottom">
-              <h3>Ticket Sales Target Monitor</h3>
-            </div>
-            <div class="card-body padding-lg">
-              <div class="target-radial">
-                <div class="radial-ring">
-                  <div class="percentage-number" id="ticket-target-pct">0%</div>
-                  <div class="radial-desc">Of Monthly Goal</div>
-                </div>
-              </div>
-              <div class="target-details">
-                <div class="detail-item">
-                  <span>Current Month Sales:</span>
-                  <strong id="ticket-current-sales-usd">$0.00</strong>
-                </div>
-                <div class="detail-item">
-                  <span>Monthly Goal Target:</span>
-                  <strong>$2,500,000.00</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab Content: Operations & Staff -->
-      <div class="tab-content hidden" id="tab-operations">
-        <div class="ops-grid">
-          <div class="grid-card">
-            <div class="card-header border-bottom">
-              <h3>Staff Allocation & Deployments</h3>
-            </div>
-            <div class="staff-allocation-content">
-              <div class="allocation-item">
-                <div class="item-header">
-                  <span>Security Guards Staffing</span>
-                  <strong id="staff-security-count">120 Guards</strong>
-                </div>
-                <div class="staff-slider">
-                  <input type="range" id="slider-security" min="50" max="300" value="120">
-                </div>
-              </div>
-
-              <div class="allocation-item">
-                <div class="item-header">
-                  <span>Turnstile Staffing</span>
-                  <strong id="staff-turnstile-count">32 Attendants</strong>
-                </div>
-                <div class="staff-slider">
-                  <input type="range" id="slider-turnstiles" min="16" max="64" value="32">
-                </div>
-              </div>
-
-              <div class="allocation-item">
-                <div class="item-header">
-                  <span>Medical Staff Onsite</span>
-                  <strong id="staff-medical-count">12 Emergency Responders</strong>
-                </div>
-                <div class="staff-slider">
-                  <input type="range" id="slider-medical" min="4" max="40" value="12">
-                </div>
-              </div>
-
-              <div class="allocation-item">
-                <div class="item-header">
-                  <span>Janitorial Crew</span>
-                  <strong id="staff-janitorial-count">45 Personnel</strong>
-                </div>
-                <div class="staff-slider">
-                  <input type="range" id="slider-janitorial" min="20" max="100" value="45">
-                </div>
+            
+            <div class="form-field-wrapper mt-3">
+              <label for="prep-window">Available Prep Windows</label>
+              <div class="checkbox-group">
+                <label class="custom-checkbox">
+                  <input type="checkbox" id="prep-morning" checked>
+                  <span class="checkmark"></span>
+                  Morning (Before 9 AM)
+                </label>
+                <label class="custom-checkbox">
+                  <input type="checkbox" id="prep-afternoon" checked>
+                  <span class="checkmark"></span>
+                  Afternoon (12 PM - 2 PM)
+                </label>
+                <label class="custom-checkbox">
+                  <input type="checkbox" id="prep-evening" checked>
+                  <span class="checkmark"></span>
+                  Evening (After 5 PM)
+                </label>
               </div>
             </div>
           </div>
 
-          <div class="grid-card">
-            <div class="card-header border-bottom">
-              <h3>Facility Infrastructure Status Checks</h3>
-            </div>
-            <div class="infra-list">
-              <div class="infra-item">
-                <div class="infra-info">
-                  <i data-lucide="video" class="success-color"></i>
-                  <div>
-                    <strong>CCTV Cam Network</strong>
-                    <span>144 active streams operating correctly</span>
-                  </div>
-                </div>
-                <span class="status-tag success">ONLINE</span>
-              </div>
-
-              <div class="infra-item">
-                <div class="infra-info">
-                  <i data-lucide="wifi" class="success-color"></i>
-                  <div>
-                    <strong>Stadium High-Density Wi-Fi</strong>
-                    <span>Fan access point distribution load balanced</span>
-                  </div>
-                </div>
-                <span class="status-tag success">ONLINE</span>
-              </div>
-
-              <div class="infra-item">
-                <div class="infra-info">
-                  <i data-lucide="plug-zap" class="warning-color"></i>
-                  <div>
-                    <strong>Backup Power Generator</strong>
-                    <span>Periodic automatic load testing completed</span>
-                  </div>
-                </div>
-                <span class="status-tag warning">STANDBY</span>
-              </div>
-
-              <div class="infra-item">
-                <div class="infra-info">
-                  <i data-lucide="door-closed" class="success-color"></i>
-                  <div>
-                    <strong>Emergency Fire Gates</strong>
-                    <span>All 24 escape paths unblocked and active</span>
-                  </div>
-                </div>
-                <span class="status-tag success">SECURED</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab Content: Concessions -->
-      <div class="tab-content hidden" id="tab-concessions">
-        <div class="concessions-grid">
-          <div class="grid-card col-span-2">
-            <div class="card-header border-bottom">
-              <h3>Concession Stands & Inventory Levels</h3>
-            </div>
-            <div class="table-container">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Stall Name</th>
-                    <th>Stall Type</th>
-                    <th>Top Selling Item</th>
-                    <th>Stock Level</th>
-                    <th>Sales Count</th>
-                    <th>Stall Status</th>
-                    <th>Total Revenue</th>
-                  </tr>
-                </thead>
-                <tbody id="concession-table-body">
-                  <!-- Populated dynamically -->
-                </tbody>
-              </table>
+          <!-- Diet Preferences -->
+          <div class="form-group">
+            <label class="group-label">
+              <i data-lucide="salad"></i> Dietary Preferences
+            </label>
+            <div class="select-wrapper">
+              <select id="diet-preference">
+                <option value="none">Everything / Flexitarian</option>
+                <option value="vegetarian">Vegetarian</option>
+                <option value="vegan">Vegan</option>
+                <option value="keto">Low Carb / Keto</option>
+                <option value="glutenfree">Gluten-Free</option>
+              </select>
+              <i data-lucide="chevron-down" class="select-chevron"></i>
             </div>
           </div>
 
-          <div class="grid-card">
-            <div class="card-header border-bottom">
-              <h3>Live Retail Demand Breakdown</h3>
-            </div>
-            <div class="chart-container flex-center">
-              <canvas id="concession-pie-chart"></canvas>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab Content: Simulator Control Panel -->
-      <div class="tab-content hidden" id="tab-simulator">
-        <div class="simulator-grid">
-          
-          <div class="grid-card simulator-controls">
-            <div class="card-header border-bottom">
-              <h3>Crowd & Game State Simulator</h3>
-            </div>
-            <div class="card-body">
-              <p class="desc">Simulate live operational situations and events to see how ArenaFlow monitors turnstiles, ticket calculations, and emergency conditions in real-time.</p>
-              
-              <div class="sim-section">
-                <h4>Fan Arrival & Turnstiles</h4>
-                <div class="sim-button-row">
-                  <button class="btn btn-primary" id="btn-start-ingress">Start Fans Ingress</button>
-                  <button class="btn btn-secondary" id="btn-stop-ingress">Stop Ingress</button>
-                  <button class="btn btn-danger" id="btn-reset-occupancy">Clear Stadium</button>
-                </div>
-                <div class="rate-indicator">
-                  <span>Ingress Speed Multiplier:</span>
-                  <input type="range" id="ingress-speed-slider" min="1" max="10" value="3">
-                  <span id="ingress-speed-val">3x</span>
-                </div>
+          <!-- Budget Constraints -->
+          <div class="form-group">
+            <label class="group-label">
+              <i data-lucide="wallet"></i> Budget Feasibility Limit
+            </label>
+            <p class="field-desc">Target daily budget for grocery shopping.</p>
+            <div class="budget-slider-container">
+              <div class="slider-header">
+                <span>Target: $<span id="budget-value">25</span></span>
+                <span class="budget-level-text" id="budget-level">Standard</span>
               </div>
-
-              <div class="sim-section">
-                <h4>Match Simulation</h4>
-                <div class="sim-button-row">
-                  <button class="btn btn-success" id="btn-start-match">Kick Off Match</button>
-                  <button class="btn btn-secondary" id="btn-team-a-score">Home Goal!</button>
-                  <button class="btn btn-secondary" id="btn-team-b-score">Away Goal!</button>
-                  <button class="btn btn-danger" id="btn-end-match">End Match</button>
-                </div>
-              </div>
-
-              <div class="sim-section">
-                <h4>Security & Alert Levels</h4>
-                <div class="sim-button-row">
-                  <button class="btn btn-warning" id="btn-sim-alert">Trigger Turnstile Congestion Warning</button>
-                  <button class="btn btn-danger" id="btn-sim-emergency">Trigger Evacuation Drill</button>
-                </div>
+              <input type="range" id="budget-limit" min="10" max="60" value="25" step="5">
+              <div class="slider-labels">
+                <span>$10</span>
+                <span>$35</span>
+                <span>$60</span>
               </div>
             </div>
           </div>
 
-          <div class="grid-card simulation-console">
-            <div class="card-header border-bottom">
-              <h3>Live Security Log & Console Stream</h3>
+          <!-- Pantry Inventory -->
+          <div class="form-group">
+            <label class="group-label">
+              <i data-lucide="package-open"></i> Pantry & Fridge Items (Have)
+            </label>
+            <p class="field-desc">Check items you already have to reduce grocery list cost.</p>
+            <div class="pantry-chips" id="pantry-chips-container">
+              <!-- Dynamically populated or togglable chips -->
             </div>
-            <div class="console-box" id="console-box">
-              <div class="console-line system">[SYSTEM INITIALIZED] ArenaFlow v1.4.0 Online.</div>
-              <div class="console-line system">Turnstiles calibration checks... Done.</div>
-              <div class="console-line system">Pitch hydration monitoring connected.</div>
+            <div class="add-custom-pantry mt-2">
+              <input type="text" id="custom-pantry-input" placeholder="Add other pantry item...">
+              <button type="button" id="add-pantry-btn" class="btn btn-secondary btn-small">
+                <i data-lucide="plus"></i>
+              </button>
             </div>
           </div>
 
-        </div>
-      </div>
-
-    </main>
-  </div>
-
-  <!-- New Event Dialog Modal -->
-  <div class="modal-backdrop hidden" id="event-modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Schedule New Arena Event</h3>
-        <button class="modal-close-btn" id="close-modal-btn"><i data-lucide="x"></i></button>
-      </div>
-      <div class="modal-body">
-        <form id="new-event-form">
-          <div class="form-row">
-            <label for="modal-team-a">Home Team / Host</label>
-            <input type="text" id="modal-team-a" required placeholder="e.g. Stadium FC">
-          </div>
-          <div class="form-row">
-            <label for="modal-team-b">Away Team / Guest</label>
-            <input type="text" id="modal-team-b" required placeholder="e.g. Away City FC">
-          </div>
-          <div class="form-row">
-            <label for="modal-date">Event Date</label>
-            <input type="date" id="modal-date" required>
-          </div>
-          <div class="form-row">
-            <label for="modal-time">Start Time</label>
-            <input type="time" id="modal-time" required>
-          </div>
-          <div class="form-row">
-            <label for="modal-ticket-price">Base Ticket Price ($)</label>
-            <input type="number" id="modal-ticket-price" required min="10" max="1000" value="45">
-          </div>
-          <div class="modal-footer-btns">
-            <button type="button" class="btn btn-secondary" id="btn-cancel-modal">Cancel</button>
-            <button type="submit" class="btn btn-primary">Schedule Event</button>
-          </div>
+          <!-- Submit Button -->
+          <button type="button" id="generate-plan-btn" class="btn btn-primary btn-block">
+            <i data-lucide="sparkles"></i> Generate AI Cooking Plan
+          </button>
         </form>
-      </div>
+      </aside>
+
+      <!-- Right Output & Board Panels -->
+      <main class="dashboard-area">
+        
+        <!-- Welcome Screen -->
+        <div class="dashboard-view" id="view-welcome">
+          <div class="welcome-card">
+            <div class="welcome-icon">
+              <i data-lucide="sparkles"></i>
+            </div>
+            <h2>Let's build your culinary schedule!</h2>
+            <p>Customize your pace, budget limits, dietary choices, and current pantry stock in the sidebar, then hit <strong>Generate AI Cooking Plan</strong> to create a personalized, time-optimized cooking workflow.</p>
+            <div class="welcome-features">
+              <div class="feature-item">
+                <i data-lucide="clock-4"></i>
+                <div>
+                  <h4>Optimized To-Do Timelines</h4>
+                  <p>Prep times mapped perfectly against your schedule.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <i data-lucide="badge-dollar-sign"></i>
+                <div>
+                  <h4>Budget Constraints</h4>
+                  <p>Keeps ingredients affordable with real-time cost feasibility.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <i data-lucide="shuffle"></i>
+                <div>
+                  <h4>Smart Substitutions</h4>
+                  <p>Swap out allergens or missing items instantly.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Generating / Thinking Loader Screen -->
+        <div class="dashboard-view hidden" id="view-loader">
+          <div class="loader-container">
+            <div class="spinner-wrapper">
+              <div class="cooking-pot-spinner">
+                <i data-lucide="chef-hat"></i>
+              </div>
+              <div class="pulse-ring"></div>
+            </div>
+            <h3>Gusteau.AI is designing your menu...</h3>
+            <p class="loader-status" id="loader-status-text">Analyzing day constraints...</p>
+            
+            <!-- Live Chef Tip Carousel during loading -->
+            <div class="chef-tip-box">
+              <span class="tip-badge">CHEF TIP</span>
+              <p id="chef-tip-text">"Pre-chopping vegetables during your morning prep window saves up to 15 minutes of evening rush!"</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Output Dashboard Content (Shown after generation) -->
+        <div class="dashboard-view hidden" id="view-dashboard">
+          
+          <!-- Sticky Tabs Navigation -->
+          <div class="dashboard-tabs">
+            <button class="tab-btn active" data-tab="meal-plan">
+              <i data-lucide="utensils"></i>
+              <span>Meal Plan</span>
+            </button>
+            <button class="tab-btn" data-tab="todo-list">
+              <i data-lucide="list-todo"></i>
+              <span>Cooking To-Do List</span>
+            </button>
+            <button class="tab-btn" data-tab="grocery-budget">
+              <i data-lucide="shopping-cart"></i>
+              <span>Groceries & Budget</span>
+            </button>
+            <button class="tab-btn" data-tab="substitutions">
+              <i data-lucide="git-branch"></i>
+              <span>Substitutions</span>
+            </button>
+          </div>
+
+          <!-- TAB CONTENT: MEAL PLAN -->
+          <div class="tab-pane active" id="tab-meal-plan">
+            <div class="pane-header">
+              <div>
+                <h2>Your Personalized Meal Plan</h2>
+                <p>Curated meals matched to your daily rhythm, diet, and kitchen time budget.</p>
+              </div>
+              <div class="badge badge-success" id="diet-tag">Flexitarian</div>
+            </div>
+
+            <div class="meal-cards-grid" id="meal-cards-grid">
+              <!-- Dynamically Populated -->
+            </div>
+          </div>
+
+          <!-- TAB CONTENT: COOKING TO-DO LIST -->
+          <div class="tab-pane" id="tab-todo-list">
+            <div class="pane-header">
+              <div>
+                <h2>Chronological To-Do List</h2>
+                <p>Cook efficiently by grouping preparation tasks to match your day schedule.</p>
+              </div>
+              <div class="todo-progress-container">
+                <span class="todo-progress-text"><span id="todo-completed-count">0</span>/<span id="todo-total-count">6</span> Tasks</span>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" id="todo-progress-bar" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="todo-timeline" id="todo-timeline">
+              <!-- Timeline sections dynamically populated by javascript -->
+            </div>
+          </div>
+
+          <!-- TAB CONTENT: GROCERIES & BUDGET -->
+          <div class="tab-pane" id="tab-grocery-budget">
+            <div class="pane-grid-2col">
+              
+              <!-- Grocery Column -->
+              <div class="grocery-column">
+                <div class="pane-header-sub">
+                  <h3>Grocery Checklist</h3>
+                  <button id="uncheck-all-groceries" class="btn btn-secondary btn-small">Reset Checklist</button>
+                </div>
+                
+                <div class="grocery-sections-container" id="grocery-list-container">
+                  <!-- Sections like Produce, Dairy, Protein etc. -->
+                </div>
+              </div>
+
+              <!-- Budget Dashboard Column -->
+              <div class="budget-column">
+                <div class="pane-header-sub">
+                  <h3>Budget Feasibility Analysis</h3>
+                </div>
+
+                <div class="budget-card">
+                  <div class="budget-comparison">
+                    <div class="budget-stat">
+                      <span class="stat-label">Estimated Cost</span>
+                      <span class="stat-val" id="total-grocery-cost">$0.00</span>
+                    </div>
+                    <div class="budget-divider"><i data-lucide="arrow-right-left"></i></div>
+                    <div class="budget-stat">
+                      <span class="stat-label">Your Budget Target</span>
+                      <span class="stat-val" id="target-grocery-budget">$0.00</span>
+                    </div>
+                  </div>
+
+                  <div class="budget-status-alert" id="budget-status-alert">
+                    <div class="alert-icon">
+                      <i data-lucide="check-circle-2"></i>
+                    </div>
+                    <div class="alert-content">
+                      <h4 id="budget-alert-title">Within Budget!</h4>
+                      <p id="budget-alert-desc">Your customized recipe matches are highly economical.</p>
+                    </div>
+                  </div>
+
+                  <!-- Cost breakdown chart / lists -->
+                  <div class="cost-breakdown-list">
+                    <h4>Meal Cost Breakdown</h4>
+                    <div class="breakdown-item">
+                      <span>Breakfast Selection</span>
+                      <strong id="cost-breakdown-breakfast">$0.00</strong>
+                    </div>
+                    <div class="breakdown-item">
+                      <span>Lunch Selection</span>
+                      <strong id="cost-breakdown-lunch">$0.00</strong>
+                    </div>
+                    <div class="breakdown-item">
+                      <span>Dinner Selection</span>
+                      <strong id="cost-breakdown-dinner">$0.00</strong>
+                    </div>
+                    <div class="breakdown-item pantry-discount">
+                      <span>Pantry Ingredient Discount</span>
+                      <strong id="cost-breakdown-pantry">-$0.00</strong>
+                    </div>
+                  </div>
+
+                  <!-- Budget optimization advice -->
+                  <div class="budget-advice-box">
+                    <div class="advice-header">
+                      <i data-lucide="lightbulb" class="icon-amber"></i>
+                      <h4>Budget Optimization Suggestion</h4>
+                    </div>
+                    <p id="budget-advice-text">To save more, try swapping out salmon for tofu or cod in the Substitutions tab.</p>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- TAB CONTENT: SUBSTITUTIONS -->
+          <div class="tab-pane" id="tab-substitutions">
+            <div class="pane-header">
+              <div>
+                <h2>Ingredient Swap & Substitutions</h2>
+                <p>Customize ingredients based on dietary needs, missing items, or to fit your budget better.</p>
+              </div>
+            </div>
+
+            <div class="substitutions-panel">
+              <div class="subs-intro">
+                <i data-lucide="git-branch"></i>
+                <p>Select any key ingredient below to swap it. Swapping updates your recipe instructions, ingredient checklist, and estimated budget instantly!</p>
+              </div>
+
+              <div class="substitution-cards-grid" id="subs-cards-container">
+                <!-- Dynamically populated swap options -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
     </div>
+
   </div>
 
-  <!-- Script File -->
+  <!-- Lucide Icon Initialization -->
   <script src="app.js"></script>
 </body>
 </html>
